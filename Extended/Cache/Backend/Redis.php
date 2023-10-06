@@ -243,7 +243,11 @@ class Extended_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Ca
                 if ($lifetime === null && $ttl < 0) {
                     $this->_redis->persist($keyFromTag);
                 } elseif ($lifetime !== null && $ttl < $lifetime) {
-                    $this->_redis->setTimeout($keyFromTag, $lifetime);
+                    if (method_exists($this->_redis, 'setTimeout')) {
+                        $this->_redis->setTimeout($keyFromTag, $lifetime);
+                    } else {
+                        $this->_redis->expire($keyFromTag, $lifetime);
+                    }
                 }
             }
 
@@ -255,7 +259,11 @@ class Extended_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Ca
         }
 
         if ($lifetime !== null) {
-            $this->_redis->setTimeout($keyFromItemTags, $lifetime);
+            if (method_exists($this->_redis, 'setTimeout')) {
+                $this->_redis->setTimeout($keyFromItemTags, $lifetime);
+            } else {
+                $this->_redis->expire($keyFromItemTags, $lifetime);
+            }
         } else {
             $this->_redis->persist($keyFromItemTags);
         }
@@ -418,7 +426,11 @@ class Extended_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Ca
             $return = $this->_redis->sAdd($this->_keyFromId($set), $member);
         }
         if ($lifetime !== null)
-            $this->_redis->setTimeout($this->_keyFromId($set), $lifetime);
+            if (method_exists($this->_redis, 'setTimeout')) {
+                $this->_redis->setTimeout($this->_keyFromId($set), $lifetime);
+            } else {
+                $this->_redis->expire($this->_keyFromId($set), $lifetime);
+            }
 
         return $return;
     }
@@ -700,8 +712,13 @@ class Extended_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Ca
         $lifetime = $this->getLifetime($extraLifetime);
         $return = false;
         if ($lifetime !== null) {
-            $this->_redis->setTimeout($this->_keyFromItemTags($id), $lifetime);
-            $return = $this->_redis->setTimeout($this->_keyFromId($id), $lifetime);
+            if (method_exists($this->_redis, 'setTimeout')) {
+                $this->_redis->setTimeout($this->_keyFromItemTags($id), $lifetime);
+                $return = $this->_redis->setTimeout($this->_keyFromId($id), $lifetime);
+            } else {
+                $this->_redis->expire($this->_keyFromItemTags($id), $lifetime);
+                $return = $this->_redis->expire($this->_keyFromId($id), $lifetime);
+            }
         } else {
             $this->_redis->persist($this->_keyFromItemTags($id));
             $return = $this->_redis->persist($this->_keyFromId($id));
@@ -712,7 +729,11 @@ class Extended_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Ca
                 if ($tag) {
                     $ttl = $this->_redis->ttl($this->_keyFromTag($tag));
                     if ($ttl !== false && $ttl !== -1 && $ttl < $lifetime && $lifetime !== null)
-                        $this->_redis->setTimeout($this->_keyFromTag($tag), $lifetime);
+                        if (method_exists($this->_redis, 'setTimeout')) {
+                            $this->_redis->setTimeout($this->_keyFromTag($tag), $lifetime);
+                        } else {
+                            $this->_redis->expire($this->_keyFromTag($tag), $lifetime);
+                        }
                     else if ($ttl !== false && $ttl !== -1 && $lifetime === null)
                         $this->_redis->persist($this->_keyFromTag($tag));
                 }
