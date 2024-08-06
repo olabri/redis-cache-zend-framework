@@ -1,5 +1,5 @@
 {
-    "name": "kalaspuff/redis-cache-zend-framework",
+    "name": "olabri/redis-cache-zend-framework",
     "description": "Redis cache backend for Zend Framework",
     "keywords": ["redis", "zend"],
     "homepage": "https://github.com/kalaspuff/redis-cache-zend-framework",
