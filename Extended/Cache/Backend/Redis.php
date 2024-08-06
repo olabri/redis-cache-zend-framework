@@ -111,6 +111,11 @@ class Extended_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Ca
             if (!array_key_exists('dbindex', $server)) {
                 $server['dbindex'] = self::DEFAULT_DBINDEX;
             }
+            if (!array_key_exists('auth', $server)) {
+                $server['auth'] = self::DEFAULT_AUTH;
+            }
+        
+         
             if ($server['persistent']) {
                 $result = $this->_redis->pconnect($server['host'], $server['port']);
             } else {
