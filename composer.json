@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "magento/zendframework1": ">=1.15:"
+        "magento/zendframework1": ">=1.15"
     },
     "autoload": {
         "classmap": ["."]
